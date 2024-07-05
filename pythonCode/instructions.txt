@@ -1,0 +1,4 @@
+uvicorn subtitles:app --reload --port 8114
+uvicorn search:app --reload --port 8113
+uvicorn episodes:app --reload --port 8111
+uvicorn rename:app --reload --port 8112
