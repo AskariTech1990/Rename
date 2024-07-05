@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rename</title>
+  <link rel="stylesheet" href="index.css" />
+  <style>
+    .hidden {
+      display: none;
+    }
+
+    .info_text,
+    .rename,
+    .listDiv,
+    .container {
+      display: none;
+    }
+
+    /* Loader CSS */
+    .loader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      /* Ensure the loader appears above other elements */
+    }
+
+    .selected {
+      background-color: #ff7e5f;
+      color: white;
+      padding: 2px;
+      border-radius: 5px;
+      /* margin-top: 10px; */
+    }
+
+    #myModal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.4);
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .modal_close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .modal_close:hover,
+    .modal_close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    #ok-button {
+      display: none;
+      margin-top: 20px;
+      background-color: #ff7e5f;
+      border: none;
+      color: white;
+      padding: 10px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 12px;
+      transition-duration: 0.4s;
+      cursor: pointer;
+      text-align: right;
+    }
+
+    #ok-button:hover {
+      box-shadow: 5px 5px 10px rgba(255, 126, 95, 0.5);
+    }
+
+    #season-select,
+    #view-option-select {
+      display: none;
+      margin-top: 10px;
+    }
+
+    #loader1 {
+      display: none;
+      position: absolute;
+      left: 50%;
+    }
+
+    #loader2 {
+      display: none;
+      position: absolute;
+      left: 45%;
+      top: 50%;
+    }
+
+    #loader4 {
+      display: none;
+    }
+
+    #modal-data {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="folder_btns">
+    <input type="file" id="file-input" multiple webkitdirectory style="display: none"
+      onchange="updateFileName(this, 'shortDesc2')" />
+    <img src="./images/image1.png" alt="" onclick="document.getElementById('file-input').click();" />
+
+    <!-- <input type="file" id="file-input1" style="display: none" /> -->
+    <img src="./images/image2.png" alt="" onclick="document.getElementById('file-input1').click();" />
+    <!-- <input type="file" id="file-input2" style="display: none" /> -->
+    <img src="./images/image3.png" alt="" onclick="document.getElementById('file-input2').click();" />
+    <!-- <input type="file" id="file-input3" style="display: none" /> -->
+    <img src="./images/image4.png" alt="" onclick="document.getElementById('file-input3').click();" />
+    <!-- <input type="file" id="file-input4" style="display: none" /> -->
+    <img src="./images/image5.png" alt="" onclick="document.getElementById('file-input3').click();" />
+  </div>
+
+  <div class="button-row">
+    <button class="first_btn">Info</button>
+    <button class="rename_btn selected">Rename</button>
+    <button class="episodes_btn">Episodes</button>
+    <button>Subtitles</button>
+    <!-- <button>Analyze</button> -->
+    <button class="last_btn">List</button>
+  </div>
+
+  <div class="info_div" style="position: relative">
+    <div class="info_div_two">
+      <form class="info_2nd_div_form">
+        <label for="file-info" class="info_div_form">Search:
+          <input type="text" id="shortDesc2" />
+        </label>
+        <div class="info_2nd_div_search_btns">
+          <!-- <select name="region">
+              <option value="unitedstate">United States</option>
+              <option value="asia">Asia</option>
+            </select>
+            <select name="language">
+              <option value="english">English</option>
+              <option value="urdu">Urdu</option>
+              <option value="hindi">Hindi</option>
+            </select> -->
+          <select name="type">
+            <option value="anime">Anime</option>
+            <option value="movie">Movie</option>
+            <option value="series">Series</option>
+            <option value="book">Book</option>
+          </select>
+          <button id="search-btn">Search</button>
+        </div>
+      </form>
+      <div>
+        <span>Results:</span>
+        <div class="info_2nd_div_results"></div>
+
+        <span>Queue:</span>
+        <div class="info_2nd_div_queue"></div>
+
+        <div>
+          <button id="clear">Clear</button>
+          <button id="cancel">Cancel</button>
+          <button id="sort">Sort</button>
+        </div>
+        <!-- <div class="info_2nd_div_form_statusInformation">
+            <p>Status Information</p>
+            <input type="text" />
+          </div> -->
+      </div>
+    </div>
+
+    <div class="info_div_one">
+      <div class="info_div_button-row">
+        <button class="info_div_first_btn">Info</button>
+        <!-- <button>Video</button>
+          <button>Advanced</button>
+          <button>Sorting</button>
+          <button>Chapter</button> -->
+      </div>
+
+      <div class="info_text">
+        <div class="info_div_form">
+          <label for="title">Title: </label>
+          <input type="text" id="titleInput" disabled="true" />
+        </div>
+
+        <br />
+        <div class="info_div_form">
+          <label for="artist">Genre:</label>
+          <input type="text" id="artist" disabled="true" />
+        </div>
+        <br />
+        <div class="info_div_form">
+          <label for="date">Date:</label>
+          <input type="text" id="date" disabled="true" />
+        </div>
+        <br />
+
+        <div class="info_div_form">
+          <label for="rating">Rating:</label>
+          <input type="text" id="rating" disabled="true" />
+        </div>
+        <br />
+        <div class="info_div_form">
+          <label for="shortDesc1">Desc:</label>
+          <textarea id="shortDesc1" rows="8" cols="50" disabled="true"></textarea>
+        </div>
+        <br />
+
+        <!-- <div class="info_form_div_button-row">
+            <button>Enlarge</button>
+            <button>Save as File</button>
+            <button>Delete</button>
+            <button>Alternative covers</button>
+            <button>Select file</button>
+          </div> -->
+      </div>
+
+      <p class="video_text" style="display: none">Video Content</p>
+      <p class="advanced_text" style="display: none">Advanced Content</p>
+      <p class="sorting_text" style="display: none">Sorting Content</p>
+      <p class="chapter_text" style="display: none">Chapter Content</p>
+    </div>
+
+    <!-- <div class="info_div_3rd">
+        <div class="info_3rd_div">
+          <img src="./images/sukuna.jpg" width="399px" height="450px" />
+        </div>
+        <p class="info_3rd_div_text" id="titleDisplay">
+          Sukuna The King of Curses
+        </p>
+      </div> -->
+
+    <img src="./images/loader1.svg" alt="loader" id="loader2" />
+  </div>
+
+  <!-- Rename -->
+
+  <div class="rename hidden">
+    <div class="rename_divs">
+      <div class="sidebar">
+        <div style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            ">
+          <p class="sidebar_filename">Original File</p>
+          <select class="rename_select" id="api-select" style="
+                padding: 2px 20px;
+                border: none;
+                outline: none;
+                border-radius: 5px;
+              ">
+            <option value="">Select Type</option>
+            <option value="anime">Anime</option>
+            <option value="movie">Movies</option>
+            <option value="series">Series</option>
+            <option value="music">Music</option>
+          </select>
+        </div>
+        <div class="sidebar_data drop-zone" style="padding-left: 15px; padding-top: 10px" ondrop="handleDrop(event)"
+          ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+          <p style="color: #aaa">
+            SeasonName Season No. Episode No.
+          </p>
+        </div>
+
+        <div style="display: flex; justify-content: end">
+          <button class="sidebar_reload">reload</button>
+          <button class="sidebar_reload" onclick="saveFile()">Save</button>
+        </div>
+      </div>
+      <div style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 20px;
+            gap: 10px;
+          ">
+        <button class="sidebar_match" onclick="matchFile()">Match</button>
+        <button class="sidebar_rename" onclick="renameFile()">Rename</button>
+      </div>
+      <div class="rename_div_two">
+        <p class="rename_div_two_filename">New Name</p>
+        <div class="rename_div_two_data" style="padding-left: 15px; padding-top: 10px; cursor: pointer">
+          <img src="./images/loader1.svg" width="50" alt="loader" id="loader4" />
+        </div>
+        <div style="position: relative">
+          <button class="rename_div_two_fetch">Fetch</button>
+          <div id="modal" class="modal">
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <ul id="list">
+                <div style="
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                    ">
+                  <img src="./images/downarrow.png" width="10px" alt="" />
+                  <p style="font-size: 10px">Fetch & Match Data</p>
+                </div>
+                <hr />
+                <li id="tmdb" style="
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                    ">
+                  <img src="./images/moviedb.png" width="10px" alt="" />
+                  <p>TMDB(movie)</p>
+                </li>
+                <li id="tvmaze" style="
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                    ">
+                  <img src="./images/anime.png" width="10px" alt="" />
+                  <p>TVMAZE(seasons)</p>
+                </li>
+                <li id="musicbrainz" style="
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                    ">
+                  <!-- <img src="./images/voice.jpg" width="10px" alt="" /> -->
+                  <!-- <p>MUSICBRAINZ(music)</p> -->
+                </li>
+                <li id="episode" style="
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                    ">
+                  <img src="./images/voice.jpg" width="10px" alt="" />
+                  <p>Episodes</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div id="modal2" class="modal">
+    <div class="modal-content">
+      <span class="modal2-close">&times;</span>
+      <div id="modal2-data"></div>
+    </div>
+  </div>
+
+  <!-- Episode -->
+
+  <div class="container">
+    <div class="search-bar">
+      <div class="search-input">
+        <select class="Episode_select" id="episode-select">
+          <option value="TMDB">TMDB</option>
+          <option value="Anime">Anime</option>
+          <option value="TVMAZE">TVMAZE</option>
+        </select>
+        <input type="text" id="search-input" placeholder="Enter your search query" class="episode_input" />
+      </div>
+      <div class="search-filters">
+        <div class="search-input">
+          <select id="season-select"></select>
+          <select id="view-option-select">
+            <option value="by_date">By Date</option>
+            <option value="by_season">By Season</option>
+          </select>
+        </div>
+        <button id="find-button">🔍 Find</button>
+        <button id="search-button" style="display: none">
+          🔍 Search Season
+        </button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="Episode_tabs">
+        <p class="Episode_tabs_search">Search Results</p>
+        <div class="Episode_tabs_Div">
+          <div style="display: flex; flex-direction: column">
+            <p class="Episode_tabs_history" id="history-tab">History</p>
+            <ul id="history-list" style="text-align: left"></ul>
+          </div>
+          <div style="display: flex; flex-direction: column">
+            <p class="Episode_tabs_history" id="search-tab">Search</p>
+            <div id="search-results" style="text-align: left"></div>
+            <div id="new-search-results" style="text-align: left"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="myModal">
+    <div class="modal-content">
+      <span class="modal_close" id="modal_close">&times;</span>
+      <div id="modal-data"></div>
+      <button id="ok-button">OK</button>
+    </div>
+  </div>
+
+  <!-- SubTitles -->
+
+  <div class="SubTitles_container hidden">
+    <!-- <h1 style="text-align: center">SubTitles</h1> -->
+    <div class="NewSearchBar">
+      <div class="NewSearchInput">
+        <select class="Episode_select" id="new-subtitles-select">
+          <option value="TMDB">TMDB</option>
+        </select>
+        <input type="text" id="new-search-input" class="episode_input" placeholder="Search..." />
+      </div>
+      <div class="NewSearchFilters" style="display: flex; gap: 10px">
+        <button id="new-find-button">🔍 Find</button>
+        <button id="download-button" style="display: none">Download</button>
+      </div>
+    </div>
+    <div class="NewContent">
+      <div class="NewSubtitlesTabs">
+        <p class="NewSubtitlesTabsSearch">Search Results</p>
+        <div class="NewSubtitlesTabsDiv">
+          <div style="display: flex; flex-direction: column">
+            <p class="NewSubtitlesTabsHistory" id="new-history-tab">
+              History
+            </p>
+            <ul id="new-history-list" style="text-align: left"></ul>
+          </div>
+          <div style="display: flex; flex-direction: column">
+            <p class="NewSubtitlesTabsHistory" id="new-search-tab" style="position: relative">
+              Search
+            </p>
+            <div id="new-search-result" style="text-align: left"></div>
+            <div style="position: absolute; left: 50%; top: 50%">
+              <img src="./images/loader1.svg" id="loader1" alt="loader" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- List  -->
+  <div class="listDiv">
+    <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none" />
+    <div>
+      <button id="sequenceButton">Sequence</button>
+    </div>
+    <div id="fileList" class="drop-area">Drop your folder here</div>
+    <div class="listGroupButton">
+      <button id="loadFolderButton">Load Folder</button>
+      <button id="saveAsButton">Save As</button>
+      <button id="copyButton">Copy</button>
+    </div>
+    <div id="loader" class="hidden"><img src="./images/loader1.svg" /></div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
+  <script>
+    // input seach filed set name //
+
+    function updateFileName(fileInput, outputFieldId) {
+      var file = fileInput.files[0];
+      if (file) {
+        var fileName = file.name;
+        var nameWithoutExtension = fileName.replace(/\.[^/.]+$/, "");
+        document.getElementById(outputFieldId).value = nameWithoutExtension;
+      }
+    }
+
+    //Queue Button //
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // Event listener for the Clear button
+      document.getElementById("clear").addEventListener("click", function () {
+        var queueDiv = document.querySelector(".info_2nd_div_queue");
+        queueDiv.innerHTML = ""; // Clear the queue
+      });
+      function showLoader() {
+        // Create an image element for the loader
+        var loaderImg = document.createElement("img");
+        loaderImg.src = "./images/loader1.svg"; // Path to your SVG loader
+        loaderImg.alt = "Loading..."; // Alt text for accessibility
+        loaderImg.id = "loader"; // Add an ID for easy access
+        // Append the loader to the document body
+        document.body.appendChild(loaderImg);
+      }
+
+      // Function to hide the loader
+      function hideLoader() {
+        var loader = document.getElementById("loader");
+        if (loader) {
+          // Remove the loader from the document body
+          loader.parentNode.removeChild(loader);
+        }
+      }
+
+      // Event listener for the Cancel button
+      document
+        .getElementById("cancel")
+        .addEventListener("click", function () {
+          var queueDiv = document.querySelector(".info_2nd_div_queue");
+          queueDiv.innerHTML = ""; // Clear the queue
+        });
+
+      // Event listener for the Sort button
+      document.getElementById("sort").addEventListener("click", function () {
+        var queueDiv = document.querySelector(".info_2nd_div_queue");
+        var items = Array.from(queueDiv.children);
+        items.sort(function (a, b) {
+          return a.textContent.localeCompare(b.textContent);
+        });
+        queueDiv.innerHTML = ""; // Clear the queue
+        items.forEach(function (item) {
+          queueDiv.appendChild(item); // Append sorted items back to the queue
+        });
+      });
+    });
+    // First POST Api hit //
+    // Add event listener to the Search button
+
+    function showLoader2() {
+      const loader = document.querySelector("#loader2");
+      loader.style.display = "block";
+    }
+
+    function hideLoader2() {
+      const loader = document.querySelector("#loader2");
+      loader.style.display = "none";
+    }
+    document
+      .getElementById("search-btn")
+      .addEventListener("click", function (event) {
+        // Prevent the default form submission
+        event.preventDefault();
+
+        // Disable the search button
+        this.disabled = true;
+
+        // Get the selected type from the dropdown
+        var selectedType = document.querySelector(
+          'select[name="type"]'
+        ).value;
+        if (!selectedType.trim()) {
+          var alertMessage = document.getElementById("alertMessage");
+          alertMessage.textContent =
+            "Please select a type before submitting.";
+
+          // Show the modal
+          var modal = document.getElementById("myModal");
+          modal.style.display = "block";
+
+          // Enable the search button after 5 seconds
+          setTimeout(function () {
+            document.getElementById("search-btn").disabled = false;
+          }, 5000);
+
+          return; // Exit the function to prevent further processing
+        }
+        // Define the base URL for the API
+        var baseUrl = "";
+
+        // Determine the API endpoint based on the selected type
+        switch (selectedType) {
+          case "anime":
+            baseUrl = "https://jnjd8s9d-8998.euw.devtunnels.ms/search-anime/";
+            break;
+          case "movie":
+            baseUrl = "https://jnjd8s9d-8998.euw.devtunnels.ms/search_movie/";
+            break;
+          case "series":
+            baseUrl = "https://jnjd8s9d-8998.euw.devtunnels.ms/search_show/";
+            break;
+          case "book":
+            baseUrl = "https://jnjd8s9d-8998.euw.devtunnels.ms/search_books/";
+            break;
+          default:
+            baseUrl = "https://jnjd8s9d-8998.euw.devtunnels.ms/search_movie/";
+            break;
+        }
+
+        showLoader2();
+
+        // Create a FormData object
+        var formData = new FormData();
+        var searchTerm = document.getElementById("shortDesc2").value;
+        formData.append("query", searchTerm);
+        // Fetch data from the determined API endpoint
+        fetch(baseUrl, {
+          method: "POST",
+          body: formData, // Send the form data as FormData
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            hideLoader2();
+            // Handle API response data
+            // hideLoader();
+            console.log("Success:", data);
+
+            // setTimeout(function () {
+            //   window.location.reload();
+            // }, 10000); // 10 seconds
+
+            var resultsDiv = document.querySelector(".info_2nd_div_results");
+            resultsDiv.innerHTML = ""; // Clear previous results
+            var resultItem = document.createElement("div");
+            resultItem.textContent = data.title || "No title available";
+            resultsDiv.appendChild(resultItem);
+            // Update the title, date, overview, rating, and genres based on the response
+            if (selectedType === "movie") {
+              document.getElementById("titleInput").value = data.title || "";
+              // document.getElementById("artist").value = data.artist || "";
+              document.getElementById("date").value = data.release_date || "";
+              document.getElementById("shortDesc1").value =
+                data.overview || "";
+              document.getElementById("rating").value =
+                data.vote_average || "";
+              var genresInput = document.getElementById("artist");
+              if (genresInput) {
+                genresInput.value = data.genres ? data.genres.join(", ") : "";
+              }
+              var titleDisplay = document.getElementById("titleDisplay");
+
+              var posterImg = document.querySelector(".info_3rd_div img");
+              if (posterImg) {
+                console.log(data);
+                if (data.poster_image || data.posterImage) {
+                  posterImg.src = data.poster_image || data.posterImage;
+                  posterImg.alt = data.title || ""; // Update alt text with the movie, anime, or book title
+                } else {
+                  posterImg.src = "./images/no_image_available.png"; // Fallback image if no poster is available
+                  posterImg.alt = "No image available";
+                }
+              } else {
+                console.error("Poster image element not found");
+              }
+            } else if (selectedType === "anime") {
+              document.getElementById("titleInput").value = data.title || "";
+              document.getElementById("date").value = data.startDate || "";
+
+              document.getElementById("rating").value = data.rating || "";
+              document.getElementById("shortDesc1").value =
+                data.synopsis || "";
+              // For anime, we don't have a rating field, so leaving it blank
+              var genresInputAnime = document.getElementById("artist");
+              console.log("first", genresInputAnime);
+              if (genresInputAnime) {
+                genresInputAnime.value = data.genres
+                  ? data.genres.join(", ")
+                  : "";
+              }
+              var titleDisplay = document.getElementById("titleDisplay");
+              if (titleDisplay) {
+                titleDisplay.innerText = data.title || ""; // Update the title display
+              }
+              var posterImg = document.querySelector(".info_3rd_div img");
+              if (posterImg) {
+                console.log(data);
+                if (data.poster_image || data.posterImage) {
+                  posterImg.src = data.poster_image || data.posterImage;
+                  posterImg.alt = data.title || ""; // Update alt text with the movie, anime, or book title
+                } else {
+                  posterImg.src = "./images/no_image_available.png"; // Fallback image if no poster is available
+                  posterImg.alt = "No image available";
+                }
+              } else {
+                console.error("Poster image element not found");
+              }
+            } else if (selectedType === "series") {
+              document.getElementById("titleInput").value = data.name || "";
+              document.getElementById("date").value = data.premiered || "";
+              document.getElementById("shortDesc1").value =
+                data.summary || "";
+              document.getElementById("rating").value = data.rating || "";
+              // For anime, we don't have a rating field, so leaving it blank
+              var genresInput = document.getElementById("artist");
+              if (genresInput) {
+                genresInput.value = data.genres ? data.genres.join(", ") : "";
+              }
+              var titleDisplay = document.getElementById("titleDisplay");
+              if (titleDisplay) {
+                titleDisplay.innerText = data.title || ""; // Update the title display
+              }
+              var posterImg = document.querySelector(".info_3rd_div img");
+              if (posterImg) {
+                console.log(data);
+                if (data.poster_image || data.posterImage) {
+                  posterImg.src = data.poster_image || data.posterImage;
+                  posterImg.alt = data.title || ""; // Update alt text with the movie, anime, or book title
+                } else {
+                  posterImg.src = "./images/no_image_available.png"; // Fallback image if no poster is available
+                  posterImg.alt = "No image available";
+                }
+              } else {
+                console.error("Poster image element not found");
+              }
+            } else if (selectedType === "book") {
+              document.getElementById("titleInput").value = data.title || "";
+              document.getElementById("date").value =
+                data.first_publish_year || "";
+              document.getElementById("artist").value = data.author || "";
+              document.getElementById("shortDesc1").value =
+                data.description || "";
+              document.getElementById("rating").value = data.rating || "";
+
+              // Update the image source
+              var posterImg = document.querySelector(".info_3rd_div img");
+              if (posterImg) {
+                posterImg.src =
+                  data.poster_image || "./images/no_image_available.png"; // Use a fallback image if no poster is available
+                posterImg.alt = data.title || "No image available"; // Update alt text with the book title
+              } else {
+                console.error("Poster image element not found");
+              }
+              var titleDisplay = document.getElementById("titleDisplay");
+              if (titleDisplay) {
+                titleDisplay.innerText = data.title || ""; // Update the title display
+              }
+
+              // Update the genre display
+              var genreDisplay = document.getElementById("genreDisplay");
+              if (genreDisplay) {
+                genreDisplay.innerText = data.genre || "";
+              }
+            }
+
+            // Update the image source if available
+
+            var queueDiv = document.querySelector(".info_2nd_div_queue");
+            var queueItem = document.createElement("div");
+            queueItem.textContent = searchTerm;
+            queueDiv.insertBefore(queueItem, queueDiv.firstChild);
+
+            // Enable the search button after 5 seconds
+            setTimeout(function () {
+              document.getElementById("search-btn").disabled = false;
+            }, 5000);
+          })
+          .catch((error) => {
+            // Handle errors
+            console.error("Error:", error);
+            hideLoader2();
+            // hideLoader();
+          });
+      });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll(
+        ".info_div_button-row button"
+      );
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          const buttonText = button.textContent;
+          const infoTextDiv = document.querySelector(".info_text");
+          const infoDivTwo = document.querySelector(".info_div_two");
+          const infoThirdDiv = document.querySelector(".info_3rd_div");
+          switch (buttonText) {
+            case "Info":
+              infoTextDiv.style.display = "block";
+              infoDivTwo.style.display = "block";
+              infoThirdDiv.style.display = "block";
+              break;
+            case "Video":
+              infoTextDiv.style.display = "none";
+              infoDivTwo.style.display = "none";
+              infoThirdDiv.style.display = "none";
+              // Show only the corresponding content for Video
+              // You can implement this if needed
+              break;
+            case "Advanced":
+              infoTextDiv.style.display = "none";
+              infoDivTwo.style.display = "none";
+              infoThirdDiv.style.display = "none";
+              // Show only the corresponding content for Advanced
+              // You can implement this if needed
+              break;
+            case "Sorting":
+              infoTextDiv.style.display = "none";
+              infoDivTwo.style.display = "none";
+              infoThirdDiv.style.display = "none";
+              // Show only the corresponding content for Sorting
+              // You can implement this if needed
+              break;
+            case "Chapter":
+              infoTextDiv.style.display = "none";
+              infoDivTwo.style.display = "none";
+              infoThirdDiv.style.display = "none";
+              // Show only the corresponding content for Chapter
+              // You can implement this if needed
+              break;
+            default:
+              break;
+          }
+        });
+      });
+      // Show the initial selected content
+      const initialContent = document.querySelector(
+        ".info_div_button-row .info_div_first_btn"
+      );
+      initialContent.click();
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll(".button-row button");
+      const infoDivs = document.querySelectorAll(".info_div > div");
+      const renameDiv = document.querySelector(".rename");
+      const episodesDiv = document.querySelector(".container");
+      const subtitlesDiv = document.querySelector(".SubTitles_container");
+      const listDiv = document.querySelector(".listDiv");
+
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          const buttonText = button.textContent;
+
+          // Hide all sections
+          infoDivs.forEach(function (div) {
+            div.style.display = "none";
+          });
+          renameDiv.style.display = "none";
+          episodesDiv.style.display = "none";
+          subtitlesDiv.style.display = "none";
+          listDiv.style.display = "none";
+
+          // Show the relevant section based on the clicked button
+          switch (buttonText) {
+            case "Info":
+              document.querySelector(".info_div_one").style.display = "block";
+              document.querySelector(".info_div_two").style.display = "block";
+              document.querySelector(".info_div_3rd").style.display = "block";
+              break;
+            case "Rename":
+              renameDiv.style.display = "block";
+              break;
+            case "Episodes":
+              episodesDiv.style.display = "block";
+              break;
+            case "Subtitles":
+              // Show the div relevant to 'Subtitles' button
+              // You can add implementation here if needed
+              subtitlesDiv.style.display = "block";
+              break;
+            case "Analyze":
+              document.querySelector(".analyze").style.display = "block";
+              break;
+            case "List":
+              listDiv.style.display = "block";
+              break;
+            default:
+              break;
+          }
+        });
+      });
+
+      // Show the initial selected content
+      const initialContent = document.querySelector(".rename_btn");
+      if (initialContent) {
+        initialContent.click();
+      }
+    });
+
+    // Rename //
+
+
+
+
+
+
+
+    ///
+    document.addEventListener("DOMContentLoaded", function () {
+      const fetchButton = document.querySelector(".rename_div_two_fetch");
+      const modal = document.getElementById("modal");
+      const closeBtn = document.querySelector(".close");
+
+      fetchButton.addEventListener("click", function () {
+        modal.style.display = "block"; // Display the modal
+      });
+
+      // Close the modal when the close button is clicked
+      closeBtn.addEventListener("click", function () {
+        modal.style.display = "none";
+      });
+
+      // Close the modal when the user clicks outside of it
+      window.addEventListener("click", function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // Function to fetch TMDB data and open modal
+      function fetchTMDBData() {
+        const tmdbData = "Data from TMDB API";
+        openModal(
+          tmdbData,
+          "https://jnjd8s9d-8911.euw.devtunnels.ms/rename_movie/"
+        );
+      }
+
+      // Function to fetch TVMaze data and open modal
+      function fetchTVMazeData() {
+        const tvmazeData = "Data from TVMaze API";
+        openModal(
+          tvmazeData,
+          "https://jnjd8s9d-8911.euw.devtunnels.ms/rename_episodes/"
+        );
+      }
+
+      // Function to fetch MUSICBRAINZ data and open modal
+      function fetchMusicBrainzData() {
+        const musicBrainzData = "Data from MUSICBRAINZ API";
+        openModal(
+          musicBrainzData,
+          "https://5bdb-34-125-151-161.ngrok-free.app/identify_music/"
+        );
+      }
+
+      // Function to fetch Episode data and open modal
+      function fetchEpisodeData() {
+        const episodeData = "Data from Episode API";
+        openModal(
+          episodeData,
+          "https://jnjd8s9d-8911.euw.devtunnels.ms/rename_episodes/"
+        );
+      }
+
+      // Function to open modal with provided data
+      function openModal(data, apiUrl) {
+        const modal = document.getElementById("modal2");
+        const modalData = document.getElementById("modal2-data");
+
+        modal.style.display = "block";
+        modalData.innerHTML = ""; // Clear previous content
+
+        if (
+          apiUrl.includes("rename_movie") ||
+          apiUrl.includes("rename_tv_show") ||
+          apiUrl.includes("rename_music")
+        ) {
+          // Create form for movie, TV show, or music search
+          modalData.innerHTML = `
+                <form id="apiForm">
+                    <input type="text" id="apiInput" name="apiInput" placeholder="Enter search term">
+                    ${apiUrl.includes("rename_music")
+              ? '<input type="text" id="artistInput" name="artistInput" placeholder="Enter artist name">'
+              : ""
+            }
+                    <button type="submit">Search</button>
+                </form>
+            `;
+        } else if (apiUrl.includes("rename_episodes")) {
+          // Create form for episode search
+          modalData.innerHTML = `
+                <form id="apiForm">
+                    <input type="text" id="apiInput" name="apiInput" placeholder="loki season 1 expisode 1">
+                    <button type="submit">Search</button>
+                </form>
+            `;
+        }
+
+        var modalClose = document.getElementById("modal");
+
+        const apiForm = document.getElementById("apiForm");
+        apiForm.addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          const formData = new FormData(apiForm);
+          const searchTerm = formData.get("apiInput");
+          const seasonName = formData.get("seasonInput");
+          const episodeName = formData.get("episodeInput");
+          const artistName = formData.get("artistInput");
+
+          modalClose.style.display = "none";
+
+          console.log("Form Data:", Array.from(formData.entries())); // Log the FormData entries
+          const responseDiv = document.querySelector(".rename_div_two_data");
+          responseDiv.innerHTML = "Loading...";
+          if (apiUrl.includes("rename_episodes")) {
+            sendPostRequest(
+              {
+                query: searchTerm,
+                season: seasonName ? parseInt(seasonName) : null,
+                episode_number: episodeName ? parseInt(episodeName) : null,
+              },
+              apiUrl
+            );
+          } else {
+            sendPostRequest(
+              { query: searchTerm, artist_name: artistName },
+              apiUrl
+            );
+          }
+
+          // Close the modal after form submission
+          modal.style.display = "none";
+        });
+
+        // Event listener for closing modal when clicking the close button
+        const closeButton = document.querySelector(".modal2-close");
+        closeButton.addEventListener("click", function () {
+          modal.style.display = "none";
+        });
+      }
+
+      // Function to send POST request
+      function sendPostRequest(data, apiUrl) {
+        const formData = new FormData();
+        for (const key in data) {
+          if (data[key] !== null && data[key] !== "") {
+            formData.append(key, data[key]);
+          }
+        }
+
+        fetch(apiUrl, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const responseDiv = document.querySelector(
+              ".rename_div_two_data"
+            );
+            responseDiv.innerHTML = "Loading..."; // Display loading message
+
+            // Clear previous content
+            responseDiv.innerHTML = "";
+
+            // Check if the response contains TV show names
+            if (data.tv_show_name) {
+              // Map and display TV show names
+              data.tv_show_name.forEach((show) => {
+                const showElement = document.createElement("div");
+                showElement.textContent = show;
+                responseDiv.appendChild(showElement);
+              });
+            } else if (data.movie_name) {
+              // Map and display movie names
+              data.movie_name.forEach((movie) => {
+                const movieElement = document.createElement("div");
+                movieElement.textContent = movie;
+                responseDiv.appendChild(movieElement);
+              });
+            } else if (data.episode) {
+              // Map and display episode name
+              const episodeElement = document.createElement("div");
+              episodeElement.textContent = data.episode;
+              responseDiv.appendChild(episodeElement);
+            } else if (data.recording) {
+              // Map and display episode name
+              const musicElement = document.createElement("div");
+              musicElement.textContent = data.recording;
+              responseDiv.appendChild(musicElement);
+            } else {
+              // If no results found
+              responseDiv.textContent = "No results found";
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            const responseDiv = document.querySelector(
+              ".rename_div_two_data"
+            );
+            responseDiv.textContent =
+              "An error occurred while fetching data.";
+          });
+      }
+
+      // Event listener for TMDB button click
+      const tmdbButton = document.getElementById("tmdb");
+      tmdbButton.addEventListener("click", fetchTMDBData);
+
+      // Event listener for TVMaze button click
+      const tvmazeButton = document.getElementById("tvmaze");
+      tvmazeButton.addEventListener("click", fetchTVMazeData);
+
+      // Event listener for MusicBrainz button click
+      const musicBrainzButton = document.getElementById("musicbrainz");
+      musicBrainzButton.addEventListener("click", fetchMusicBrainzData);
+
+      // Event listener for Episode button click
+      const episodeButton = document.getElementById("episode");
+      episodeButton.addEventListener("click", fetchEpisodeData);
+
+      // Event listener for closing modal
+      const closeBtn = document.querySelector(".close");
+      closeBtn.addEventListener("click", function () {
+        const modal = document.getElementById("modal2");
+        modal.style.display = "none";
+      });
+
+      // Event listener to close modal when clicking outside of it
+      window.addEventListener("click", function (event) {
+        const modal = document.getElementById("modal2");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      });
+    });
+
+
+    let selectedOption = null;
+    let droppedFiles = [];
+
+    function updateFileName(input, descId) {
+      const files = input.files;
+      const fileListContainer = document.querySelector('.sidebar_data');
+      fileListContainer.innerHTML = '';
+
+      Array.from(files).forEach((file) => {
+        const listItem = document.createElement('p');
+        listItem.textContent = file.webkitRelativePath || file.name;
+        fileListContainer.appendChild(listItem);
+      });
+    }
+
+    function matchFile() {
+      const selectedAPI = document.getElementById("api-select").value;
+      console.log("Selected API:", selectedAPI);
+
+      const uploadedFiles = droppedFiles.length > 0 ? droppedFiles : document.getElementById("file-input").files;
+      console.log("Uploaded files:", uploadedFiles);
+
+      if (!uploadedFiles.length) {
+        console.log("No files uploaded.");
+        return;
+      }
+
+      let endpoint = "";
+      switch (selectedAPI) {
+        case "anime":
+          endpoint = "https://s9g36m1m-8112.inc1.devtunnels.ms/rename_episodes/";
+          break;
+        case "movie":
+          endpoint = "https://jnjd8s9d-8911.euw.devtunnels.ms/rename_movie/";
+          break;
+        case "series":
+          endpoint = "https://s9g36m1m-8112.inc1.devtunnels.ms/rename_episodes/";
+          break;
+        case "music":
+          endpoint = "https://0803-35-199-59-55.ngrok-free.app/identify_music/";
+          break;
+        default:
+          console.error("Invalid selection");
+          return;
+      }
+      console.log("Endpoint:", endpoint);
+
+      let requestBody = {}; // Initialize an empty object for the request body
+
+      // Check if the selected API is music
+      if (selectedAPI === "music") {
+        // If it's music, append each file individually
+        requestBody.files = Array.from(uploadedFiles).map((file) => file.name);
+      } else {
+        // If it's not music, create an array of episode names
+        requestBody.episodes = Array.from(uploadedFiles).map((file) => {
+          const fileNameWithExtension = file.name;
+          return fileNameWithExtension.replace(/\.[^/.]+$/, "");
+        });
+      }
+
+      console.log("Request Body:", requestBody);
+
+      const responseDiv = document.querySelector(".rename_div_two_data");
+      showLoader4(); // Set loading message while waiting for response
+
+      fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json" // Set the Content-Type header to indicate JSON format
+        },
+        body: JSON.stringify(requestBody) // Convert the request body object to JSON
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          hideLoader4();
+          console.log("Response:", data);
+          // Set response text to the <p> element
+          responseDiv.innerHTML = ""; // Clear previous content
+          const loader = document.getElementById("loader4");
+          if (loader) {
+            loader.remove(); // Remove the loader image
+          }
+
+          if ((selectedAPI === "series" || selectedAPI === "anime") && data.renamed_episodes) {
+            data.renamed_episodes.forEach((episode) => {
+              const episodeElement = document.createElement('p');
+              episodeElement.textContent = episode;
+              // episodeElement.style.borderBottom = "1px solid #000";
+              episodeElement.style.width = "100%";
+              episodeElement.classList.add('response-item');
+              episodeElement.addEventListener("click", function (event) {
+                const selected = document.querySelector('.rename_div_two_data p.selected');
+                if (selected) {
+                  selected.classList.remove('selected');
+                }
+                event.target.classList.add('selected');
+              });
+              responseDiv.appendChild(episodeElement);
+            });
+          } else if (selectedAPI === "music" && data.formatted_result) {
+            responseDiv.textContent = data.formatted_result;
+          } else if (data.tv_show_name) {
+            responseDiv.textContent = data.tv_show_name.join(", ");
+          } else if (data.movie_name) {
+            responseDiv.textContent = data.movie_name.join(", ");
+          } else if (data.episode) {
+            responseDiv.textContent = data.episode;
+          } else if (data.recording) {
+            responseDiv.textContent = data.recording;
+          } else {
+            responseDiv.textContent = "No results found";
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          responseDiv.textContent = "Error occurred while fetching data";
+        });
+    }
+
+
+    function createOptionElement(name) {
+      const element = document.createElement("div");
+      element.textContent = name;
+      element.classList.add("option");
+      element.addEventListener("click", function () {
+        handleSelection(name);
+        document.querySelectorAll(".option").forEach((option) => {
+          option.style.backgroundColor = "";
+          option.style.color = "";
+        });
+        element.style.backgroundColor = "#ff7e5f";
+        element.style.color = "white";
+        element.style.padding = "7px";
+        element.style.marginRight = "5px";
+        element.style.borderRadius = "5px";
+      });
+      return element;
+    }
+
+    function handleSelection(selectedItem) {
+      selectedOption = selectedItem;
+    }
+
+    function renameFile() {
+      const selectedOption = document.querySelector('.rename_div_two_data p.selected');
+      const originalFileNameDiv = document.querySelector('.sidebar_data p');
+      const responseDiv = document.querySelector('.rename_div_two_data');
+      const sidebarDataDiv = document.querySelector('.sidebar_data');
+
+      if (selectedOption) {
+        // If an item is selected, set the original file name to the selected name
+        const selectedName = selectedOption.textContent;
+        sidebarDataDiv.innerHTML = ''; // Clear any existing names in the sidebar
+        sidebarDataDiv.textContent = selectedName; // Display only the selected name
+      } else {
+        // If no item is selected, display all response file names in the sidebar
+        sidebarDataDiv.innerHTML = ''; // Clear any existing names in the sidebar
+        const responseParagraphs = responseDiv.querySelectorAll('p');
+        responseParagraphs.forEach(paragraph => {
+          sidebarDataDiv.appendChild(paragraph.cloneNode(true));
+        });
+      }
+    }
+
+
+    function saveFile() {
+      const sidebarDataDiv = document.querySelector('.sidebar_data');
+      const filesToShow = sidebarDataDiv.querySelectorAll('p');
+
+      if (filesToShow.length === 0) {
+        console.error("No files to save");
+        return;
+      }
+
+      const zip = new JSZip();
+
+      filesToShow.forEach((fileToShow, index) => {
+        const fileName = fileToShow.textContent.trim();
+
+        // Check if the file name is not empty
+        if (fileName) {
+          // For the sake of this example, we'll create a dummy Blob
+          const dummyContent = "Dummy content for file: " + fileName;
+          const blob = new Blob([dummyContent], { type: 'text/plain' });
+
+          zip.file(fileName, blob); // Use the renamed file name
+        }
+      });
+
+      zip.generateAsync({ type: "blob" }).then((content) => {
+        const downloadLink = document.createElement("a");
+        downloadLink.href = URL.createObjectURL(content);
+        // Use the uploaded folder name as the name of the zip file
+        downloadLink.download = `${uploadedFolderName}.zip`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      });
+    }
+
+
+    function showLoader4() {
+      document.getElementById("loader4").style.display = "block";
+    }
+
+    function hideLoader4() {
+      document.getElementById("loader4").style.display = "none";
+    }
+
+    function handleDragOver(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      document.querySelector('.drop-zone').classList.add('hover');
+    }
+
+    function handleDragLeave(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      document.querySelector('.drop-zone').classList.remove('hover');
+    }
+
+    function handleDrop(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      document.querySelector('.drop-zone').classList.remove('hover');
+
+      const items = event.dataTransfer.items;
+      const fileListContainer = document.querySelector('.sidebar_data');
+      fileListContainer.innerHTML = '';
+
+      if (items) {
+        droppedFiles = [];
+        for (const item of items) {
+          const entry = item.webkitGetAsEntry();
+          if (entry.isDirectory) {
+            readDirectory(entry);
+          } else {
+            const file = item.getAsFile();
+            droppedFiles.push(file);
+            const listItem = document.createElement('p');
+            listItem.textContent = file.webkitRelativePath || file.name;
+            fileListContainer.appendChild(listItem);
+          }
+        }
+      }
+    }
+
+    function readDirectory(directory) {
+      const dirReader = directory.createReader();
+      dirReader.readEntries((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isFile) {
+            entry.file((file) => {
+              droppedFiles.push(file);
+              const listItem = document.createElement('p');
+              listItem.textContent = file.webkitRelativePath || file.name;
+              document.querySelector('.sidebar_data').appendChild(listItem);
+            });
+          } else if (entry.isDirectory) {
+            readDirectory(entry);
+          }
+        });
+      });
+    }
+
+
+
+
+    //Episode
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const findButton = document.getElementById("find-button");
+      const searchButton = document.getElementById("search-button");
+      const episodeSelect = document.getElementById("episode-select");
+      const searchInput = document.getElementById("search-input");
+      const searchResults = document.getElementById("search-results");
+      const newSearchResults = document.getElementById("new-search-results");
+      const historyList = document.getElementById("history-list");
+      const historyTab = document.getElementById("history-tab");
+      const searchTab = document.getElementById("search-tab");
+      const seasonSelect = document.getElementById("season-select");
+      const viewOptionSelect = document.getElementById("view-option-select");
+      const searchHistory = [];
+      let selectedSeries = null;
+      let nextApiUrl = null; // Variable to store the next API URL
+
+      episodeSelect.addEventListener("change", () => {
+        const selectedApi = episodeSelect.value;
+
+        if (
+          selectedApi === "TMDB" ||
+          selectedApi === "Anime" ||
+          selectedApi === "TVMAZE"
+        ) {
+          searchButton.style.display = "none";
+          findButton.style.display = "block";
+        } else {
+          findButton.style.display = "none";
+          searchButton.style.display = "block";
+        }
+      });
+
+      findButton.addEventListener("click", async () => {
+        const selectedApi = episodeSelect.value;
+        const query = searchInput.value;
+
+        if (!query) {
+          alert("Please enter a search query.");
+          return;
+        }
+
+        let apiUrl = "";
+        if (selectedApi === "TMDB") {
+          apiUrl =
+            "https://jnjd8s9d-8966.euw.devtunnels.ms/search_tv_series/";
+          nextApiUrl =
+            "https://jnjd8s9d-8966.euw.devtunnels.ms/episodes_list_TMDB/";
+        } else if (selectedApi === "Anime") {
+          apiUrl =
+            "https://jnjd8s9d-8966.euw.devtunnels.ms/multi_anime_search_jikan/";
+          nextApiUrl =
+            "https://jnjd8s9d-8966.euw.devtunnels.ms/episodes_list_Jikan/";
+        } else if (selectedApi === "TVMAZE") {
+          apiUrl =
+            "https://jnjd8s9d-8966.euw.devtunnels.ms/tv_series_details_TVMAZE/";
+          nextApiUrl =
+            "https://jnjd8s9d-8966.euw.devtunnels.ms/tv_series_episodes_list_TVMAZE/";
+        } else {
+          alert("Invalid API selection.");
+          return;
+        }
+
+        try {
+          showLoader();
+          const formData = new FormData();
+          formData.append("query", query);
+
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+          hideLoader();
+          openModal(data, selectedApi, nextApiUrl);
+
+          // Add search query to search history
+          searchHistory.push(query);
+          updateHistoryList();
+        } catch (error) {
+          hideLoader();
+          console.error("Error fetching data:");
+          alert(error);
+        }
+      });
+
+      searchButton.addEventListener("click", () => {
+        const selectedSeason = seasonSelect.value;
+        const selectedViewOption = viewOptionSelect.value;
+        if (!selectedViewOption) {
+          alert("Please select a series, season, and view option.");
+          return;
+        }
+        sendToNextApi(
+          selectedSeries.id,
+          selectedSeason,
+          selectedViewOption,
+          nextApiUrl
+        );
+      });
+
+      // function openModal(data, apiSource, nextApiUrl) {
+      //   const modal = document.getElementById("myModal");
+      //   const modalData = document.getElementById("modal-data");
+      //   const okButton = document.getElementById("ok-button");
+      //   const closeButtonModal = document.getElementById("modal_close");
+
+      //   modalData.innerHTML = "";
+      //   selectedSeries = null;
+      //   okButton.style.display = "none";
+
+      //   let items;
+      //   if (apiSource === "TMDB") {
+      //     items = data;
+      //   } else if (apiSource === "Anime") {
+      //     items = data.results;
+      //   } else if (apiSource === "TVMAZE") {
+      //     items = data;
+      //   }
+
+      //   items.forEach((item) => {
+      //     const seriesDiv = document.createElement("div");
+      //     seriesDiv.classList.add("series-item");
+
+      //     const seriesPoster = document.createElement("img");
+      //     seriesPoster.classList.add("series-poster");
+      //     seriesPoster.src = item.poster; // Assuming "poster" is the property name in the response for the poster URL
+      //     seriesDiv.appendChild(seriesPoster);
+      //     seriesPoster.style.width = "50px";
+      //     seriesPoster.style.height = "50px";
+
+      //     const seriesName = document.createElement("h3");
+      //     seriesName.textContent = item.name;
+
+      //     seriesDiv.appendChild(seriesName);
+      //     modalData.appendChild(seriesDiv);
+
+      //     seriesDiv.addEventListener("click", () => {
+      //       document.querySelectorAll(".series-item").forEach((el) => {
+      //         el.classList.remove("selected");
+      //       });
+      //       seriesDiv.classList.add("selected");
+      //       selectedSeries = item;
+      //       okButton.style.display = "block";
+      //     });
+      //   });
+
+      //   // Show the modal
+      //   modal.style.display = "block";
+
+      //   // Close the modal when the close button is clicked
+      //   const closeButton = document.querySelector(".close");
+      //   closeButton.addEventListener("click", () => {
+      //     modal.style.display = "none";
+      //   });
+
+      //   okButton.addEventListener("click", () => {
+      //     if (selectedSeries) {
+      //       searchInput.value = selectedSeries.name; // Set the selected show name to the input field
+      //       populateSeasons(selectedSeries.num_seasons); // Populate the seasons dropdown
+      //       seasonSelect.style.display = "block"; // Show the season select
+      //       viewOptionSelect.style.display = "block"; // Show the view option select
+      //       findButton.style.display = "none"; // Hide the find button
+      //       searchButton.style.display = "block"; // Show the search button
+      //       modal.style.display = "none";
+      //     }
+      //   });
+
+      //   closeButtonModal.addEventListener("click", () => {
+      //     modal.style.display = "none";
+      //   });
+      // }
+
+      function openModal(data, apiSource, nextApiUrl) {
+        const modal = document.getElementById("myModal");
+        const modalData = document.getElementById("modal-data");
+        const okButton = document.getElementById("ok-button");
+        const closeButtonModal = document.getElementById("modal_close");
+
+        modalData.innerHTML = "";
+        selectedSeries = null;
+        okButton.style.display = "none";
+
+        let items;
+        if (apiSource === "TMDB") {
+          items = data;
+        } else if (apiSource === "Anime") {
+          items = data.results;
+        } else if (apiSource === "TVMAZE") {
+          items = data;
+        }
+
+        items.forEach((item) => {
+          const seriesDiv = document.createElement("div");
+          seriesDiv.classList.add("series-item");
+
+          // Create an image element for the poster
+          const seriesPoster = document.createElement("img");
+          seriesPoster.classList.add("series-poster");
+          seriesPoster.src = item.poster; // Assuming "poster" is the property name in the response for the poster URL
+          seriesDiv.appendChild(seriesPoster);
+
+          // Set the size of the image to 50px
+          seriesPoster.style.width = "50px";
+          seriesPoster.style.height = "50px";
+          seriesPoster.style.borderRadius = "100px";
+          seriesPoster.style.marginTop = "20px";
+
+          // Create a div for the series name
+          const seriesNameDiv = document.createElement("div");
+          seriesNameDiv.textContent = item.name;
+
+          // Set the display property of both elements to inline-block
+          seriesPoster.style.display = "inline-block";
+          seriesNameDiv.style.display = "inline-block";
+          seriesNameDiv.style.textAlign = "center";
+          seriesNameDiv.style.marginLeft = "20px";
+          seriesNameDiv.style.marginBottom = "40px";
+          seriesNameDiv.style.verticalAlign = "middle";
+
+          seriesDiv.appendChild(seriesNameDiv);
+
+          modalData.appendChild(seriesDiv);
+
+          seriesDiv.addEventListener("click", () => {
+            document.querySelectorAll(".series-item").forEach((el) => {
+              el.classList.remove("selected");
+            });
+            seriesDiv.classList.add("selected");
+            selectedSeries = item;
+            okButton.style.display = "block";
+          });
+        });
+
+        // Show the modal
+        modal.style.display = "block";
+
+        // Close the modal when the close button is clicked
+        const closeButton = document.querySelector(".close");
+        closeButton.addEventListener("click", () => {
+          modal.style.display = "none";
+        });
+
+        okButton.addEventListener("click", () => {
+          if (selectedSeries) {
+            searchInput.value = selectedSeries.name; // Set the selected show name to the input field
+            populateSeasons(selectedSeries.num_seasons); // Populate the seasons dropdown
+            seasonSelect.style.display = "block"; // Show the season select
+            viewOptionSelect.style.display = "block"; // Show the view option select
+            findButton.style.display = "none"; // Hide the find button
+            searchButton.style.display = "block"; // Show the search button
+            modal.style.display = "none";
+          }
+        });
+
+        closeButtonModal.addEventListener("click", () => {
+          modal.style.display = "none";
+        });
+      }
+
+      function populateSeasons(numSeasons) {
+        seasonSelect.innerHTML = ""; // Clear previous options
+        for (let i = 1; i <= numSeasons; i++) {
+          const option = document.createElement("option");
+          option.value = i;
+          option.textContent = `Season ${i}`;
+          seasonSelect.appendChild(option);
+        }
+      }
+
+      async function sendToNextApi(showId, season, viewOption, nextApiUrl) {
+        try {
+          showLoader();
+          const formData = new FormData();
+          formData.append("show_id", showId);
+          formData.append("season_number", season);
+          formData.append("option", viewOption);
+
+          const response = await fetch(nextApiUrl, {
+            method: "POST",
+            body: formData,
+          });
+
+          const responseData = await response.json();
+          hideLoader();
+          updateSearchResults(responseData.episodes); // Update search results with API response
+        } catch (error) {
+          hideLoader();
+          alert(error);
+          console.error("Error sending data to next API:", error);
+        }
+      }
+
+      function updateSearchResults(episodes) {
+        newSearchResults.innerHTML = ""; // Clear previous results
+        episodes.forEach((episode) => {
+          const resultDiv = document.createElement("div");
+          resultDiv.classList.add("result-item");
+
+          const episodeText = document.createElement("p");
+          episodeText.textContent = episode;
+          resultDiv.appendChild(episodeText);
+
+          newSearchResults.appendChild(resultDiv);
+        });
+      }
+
+      function showLoader() {
+        const loader = document.createElement("div");
+        loader.id = "loader";
+        loader.style.position = "absolute";
+        loader.style.left = "50%";
+        loader.style.top = "50%";
+        loader.style.transform = "translate(-50%, -50%)";
+        loader.style.zIndex = "9999";
+        loader.innerHTML =
+          '<img src="./images/loader1.svg" alt="Loading...">';
+        searchResults.innerHTML = ""; // Clear previous results
+        searchResults.appendChild(loader);
+      }
+
+      function hideLoader() {
+        const loader = document.getElementById("loader");
+        if (loader) {
+          loader.remove();
+        }
+      }
+
+      historyTab.addEventListener("click", () => switchToTab("history"));
+      searchTab.addEventListener("click", () => switchToTab("search"));
+
+      function switchToTab(tab) {
+        if (tab === "search") {
+          searchTab.style.backgroundColor = "#ff7e5f";
+          searchTab.style.color = "#fff";
+          searchTab.style.cursor = "pointer";
+          historyTab.style.backgroundColor = "";
+          searchResults.style.display = "block";
+          newSearchResults.style.display = "block";
+          historyList.style.display = "none";
+        } else if (tab === "history") {
+          historyTab.style.backgroundColor = "#ff7e5f";
+          historyTab.style.color = "#fff";
+          historyTab.style.cursor = "pointer";
+          searchTab.style.backgroundColor = "";
+          searchResults.style.display = "none";
+          newSearchResults.style.display = "none";
+          historyList.style.display = "block";
+
+          // Update the history list with all search queries
+          updateHistoryList();
+        }
+      }
+
+      function updateHistoryList() {
+        // Clear previous history list
+        historyList.innerHTML = "";
+        // Add each search query as a list item
+        searchHistory.forEach((query) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = query;
+          historyList.appendChild(listItem);
+        });
+      }
+    });
+
+    //Subtitles //
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const findButton = document.getElementById("new-find-button");
+      const downloadButton = document.getElementById("download-button");
+      const subtitlesSelect = document.getElementById("new-subtitles-select");
+      const searchInput = document.getElementById("new-search-input");
+      const seasonsSelect = document.getElementById("new-seasons-select");
+      const searchResults = document.getElementById("new-search-result");
+      const historyList = document.getElementById("new-history-list");
+      const historyTab = document.getElementById("new-history-tab");
+      const searchTab = document.getElementById("new-search-tab");
+      const episodeTab = document.getElementById("new-date-select");
+      const languageTab = document.getElementById("new-language-select");
+
+      const searchHistory = [];
+      let selectedSubtitleFileId = null;
+
+      findButton.addEventListener("click", async () => {
+        const selectedApi = subtitlesSelect.value;
+        const query = searchInput.value;
+
+        if (!query) {
+          alert("Please enter a search query.");
+          return;
+        }
+
+        let apiUrl = "";
+        if (selectedApi === "TMDB") {
+          apiUrl =
+            "https://jnjd8s9d-8999.euw.devtunnels.ms/search_subtitles/";
+        } else if (selectedApi === "Anime") {
+          apiUrl =
+            "https://jnjd8s9d-8999.euw.devtunnels.ms/get_anime_sub_list/";
+        } else {
+          alert("Invalid API selection.");
+          return;
+        }
+
+        try {
+          showLoader1(); // Show loader before making the API call
+          const formData = new FormData();
+          formData.append("query", query);
+
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            body: formData,
+          });
+
+          const responseText = await response.text();
+          console.log("Raw API response:", responseText); // Log the raw response for debugging
+
+          // Using regex to clean and parse the response
+          const cleanedResponseText = responseText
+            .replace(/\\\"/g, '"')
+            .replace(/^"|"$/g, "");
+          const data = JSON.parse(cleanedResponseText);
+
+          console.log("Parsed API response:", data); // Log the parsed response for debugging
+
+          hideLoader1(); // Hide loader after receiving the API response
+
+          if (Array.isArray(data)) {
+            displaySubtitles(data);
+          } else {
+            searchResults.innerHTML =
+              "<p>No subtitles found or invalid data format.</p>";
+          }
+
+          updateHistory(query);
+          switchToTab("search");
+        } catch (error) {
+          hideLoader1();
+          alert(error);
+          console.error("Error fetching subtitles:", error);
+        }
+      });
+      let downloadName = "";
+
+      function displaySubtitles(data) {
+        const searchResultsDiv = document.getElementById("new-search-result");
+        selectedSubtitleFileId = null; // Reset selected subtitle
+
+        if (data.length === 0) {
+          searchResultsDiv.innerHTML = "<p>No subtitles found.</p>";
+          return;
+        }
+
+        let resultsHTML =
+          "<table style='width:100%; border-collapse: collapse;'>";
+        resultsHTML += "<thead><tr>";
+        resultsHTML +=
+          "<th style='border: 1px solid #ddd; padding: 8px;'>File ID</th>";
+        resultsHTML +=
+          "<th style='border: 1px solid #ddd; padding: 8px;'>File Name</th>";
+        resultsHTML +=
+          "<th style='border: 1px solid #ddd; padding: 8px;'>Language</th>";
+        resultsHTML += "</tr></thead><tbody>";
+
+        data.forEach((subtitle) => {
+          resultsHTML += "<tr id='subtitle-row-" + subtitle.file_id + "'>";
+          resultsHTML += `<td style='border: 1px solid #ddd; padding: 8px;'>${subtitle.file_id}</td>`;
+          resultsHTML += `<td style='border: 1px solid #ddd; padding: 8px;'>${subtitle.file_name}</td>`;
+          resultsHTML += `<td style='border: 1px solid #ddd; padding: 8px;'>${subtitle.language}</td>`;
+          resultsHTML += "</tr>";
+        });
+
+        resultsHTML += "</tbody></table>";
+
+        searchResultsDiv.innerHTML = resultsHTML;
+
+        // Add event listeners to each subtitle row
+        data.forEach((subtitle) => {
+          const subtitleRow = document.getElementById(
+            "subtitle-row-" + subtitle.file_id
+          );
+          downloadName = subtitle.file_name;
+          subtitleRow.addEventListener("click", () =>
+            handleSubtitleClick(subtitle.file_id)
+          );
+        });
+      }
+
+      function handleSubtitleClick(file_id) {
+        // Reset background color of all subtitle rows
+        const subtitleRows = document.querySelectorAll(
+          "[id^='subtitle-row-']"
+        );
+        subtitleRows.forEach((row) => {
+          row.style.backgroundColor = "";
+        });
+
+        // Set background color of clicked subtitle row to light blue
+        const clickedRow = document.getElementById("subtitle-row-" + file_id);
+        clickedRow.style.backgroundColor = "lightblue";
+
+        // Set selectedSubtitleFileId to the clicked subtitle's file ID
+        selectedSubtitleFileId = file_id;
+
+        // Show the download button
+        downloadButton.style.display = "block";
+      }
+
+      function showLoader1() {
+        const loader = document.querySelector("#loader1");
+        loader.style.display = "block";
+      }
+
+      function hideLoader1() {
+        const loader = document.querySelector("#loader1");
+        loader.style.display = "none";
+      }
+
+      downloadButton.addEventListener("click", async () => {
+        if (selectedSubtitleFileId) {
+          const apiUrl =
+            "https://jnjd8s9d-8999.euw.devtunnels.ms/download_subtitles/"; // Replace with the actual new API URL
+
+          try {
+            const formData = new FormData();
+            formData.append("file_id", selectedSubtitleFileId);
+            showLoader5();
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error("Network response was not ok.");
+            }
+            if (response) {
+              hideLoader5();
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = downloadName; // The desired file name
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            console.log("Subtitle downloaded successfully.");
+          } catch (error) {
+            console.error("Error fetching or downloading subtitle:", error);
+            hideLoader5();
+            alert(error);
+          }
+        } else {
+          alert("No subtitle selected.");
+        }
+      });
+
+      function showLoader5() {
+        const loader = document.querySelector("#loader1");
+        loader.style.display = "block";
+      }
+
+      function hideLoader5() {
+        const loader = document.querySelector("#loader1");
+        loader.style.display = "none";
+      }
+
+      function updateHistory(query) {
+        searchHistory.push(query);
+        historyList.innerHTML = ""; // Clear previous history
+
+        searchHistory.forEach((historyItem) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = historyItem;
+          historyList.appendChild(listItem);
+        });
+      }
+
+      function switchToTab(tab) {
+        if (tab === "search") {
+          searchTab.style.backgroundColor = "#ff7e5f";
+          searchTab.style.color = "#fff";
+          historyTab.style.backgroundColor = "";
+          searchResults.style.display = "block";
+          historyList.style.display = "none"; // Hide the history list when switching to search tab
+        } else if (tab === "history") {
+          historyTab.style.backgroundColor = "#ff7e5f";
+          historyTab.style.color = "#fff";
+          historyTab.style.cursor = "pointer";
+          searchTab.style.backgroundColor = "";
+          searchResults.style.display = "none"; // Hide the search results when switching to history tab
+          historyList.style.display = "block";
+        }
+      }
+
+      historyTab.addEventListener("click", () => switchToTab("history"));
+      searchTab.addEventListener("click", () => switchToTab("search"));
+    });
+
+    //List //
+
+    document
+      .getElementById("loadFolderButton")
+      .addEventListener("click", function () {
+        document.getElementById("folderInput").click();
+      });
+
+    document
+      .getElementById("folderInput")
+      .addEventListener("change", function (event) {
+        const loadButton = document.getElementById("loadFolderButton");
+        const files = Array.from(event.target.files);
+        displayFiles(files);
+        window.fileList = files; // Save the file list for later use
+        loadButton.classList.remove("loading");
+      });
+
+    document
+      .getElementById("sequenceButton")
+      .addEventListener("click", function () {
+        if (window.fileList) {
+          this.classList.add("loading");
+          const sortedFiles = Array.from(window.fileList).sort((a, b) => {
+            const nameA = (a.webkitRelativePath || a.name).toLowerCase();
+            const nameB = (b.webkitRelativePath || b.name).toLowerCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+          });
+          displayFiles(sortedFiles);
+          this.classList.remove("loading");
+        } else {
+          alert("No files loaded.");
+        }
+      });
+
+    document
+      .getElementById("saveAsButton")
+      .addEventListener("click", function () {
+        if (window.fileList) {
+          const button = this;
+          button.classList.add("loading");
+          saveFilesAsZip(window.fileList).then(() => {
+            button.classList.remove("loading");
+          });
+        } else {
+          alert("No files to save.");
+        }
+      });
+
+    document
+      .getElementById("copyButton")
+      .addEventListener("click", function () {
+        const button = this;
+        button.classList.add("loading");
+        const fileListDiv = document.getElementById("fileList");
+        const text = fileListDiv.innerText;
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            alert("Text copied to clipboard!");
+            button.classList.remove("loading");
+          })
+          .catch((err) => {
+            console.error("Error copying text: ", err);
+            button.classList.remove("loading");
+            alert(error);
+          });
+      });
+
+    function displayFiles(files) {
+      const fileListDiv = document.getElementById("fileList");
+      fileListDiv.innerHTML = ""; // Clear existing content
+
+      if (files.length === 0) {
+        fileListDiv.innerText = "No files found in the folder.";
+      } else {
+        const fileList = document.createElement("ul");
+        for (let i = 0; i < files.length; i++) {
+          const listItem = document.createElement("li");
+          listItem.textContent = files[i].webkitRelativePath || files[i].name;
+          fileList.appendChild(listItem);
+        }
+        fileListDiv.appendChild(fileList);
+      }
+    }
+
+    function saveFilesAsZip(files) {
+      return new Promise((resolve, reject) => {
+        const zip = new JSZip();
+        const folder = zip.folder("files");
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          folder.file(file.webkitRelativePath || file.name, file);
+        }
+
+        zip
+          .generateAsync({ type: "blob" })
+          .then(function (content) {
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(content);
+            a.download = "files.zip";
+            a.style.display = "none";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            resolve();
+          })
+          .catch(function (err) {
+            console.error("Error generating zip file:", err);
+            reject(err);
+            alert(error);
+          });
+      });
+    }
+
+    function showLoader() {
+      document.getElementById("loader").classList.remove("hidden");
+    }
+
+    function hideLoader() {
+      document.getElementById("loader").classList.add("hidden");
+    }
+
+    // Drag and drop functionality
+    const fileListDiv = document.getElementById("fileList");
+
+    fileListDiv.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      fileListDiv.classList.add("drag-over");
+    });
+
+    fileListDiv.addEventListener("dragleave", () => {
+      fileListDiv.classList.remove("drag-over");
+    });
+
+    fileListDiv.addEventListener("drop", (event) => {
+      event.preventDefault();
+      fileListDiv.classList.remove("drag-over");
+
+      const items = Array.from(event.dataTransfer.items);
+      const files = [];
+
+      items.forEach((item) => {
+        const entry = item.webkitGetAsEntry();
+        if (entry.isDirectory) {
+          traverseFileTree(entry, files).then(() => {
+            displayFiles(files);
+            window.fileList = files;
+          });
+        }
+      });
+    });
+
+    function traverseFileTree(item, fileList) {
+      return new Promise((resolve) => {
+        if (item.isFile) {
+          item.file((file) => {
+            fileList.push(file);
+            resolve();
+          });
+        } else if (item.isDirectory) {
+          const dirReader = item.createReader();
+          dirReader.readEntries((entries) => {
+            const promises = entries.map((entry) =>
+              traverseFileTree(entry, fileList)
+            );
+            Promise.all(promises).then(resolve);
+          });
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
